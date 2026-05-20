@@ -1,4 +1,4 @@
-'use client';
+placeholder - 1.jpg'use client';
 
 import { useState } from 'react';
 import { Heart, Download, Share2, Eye, Tag } from 'lucide-react';
@@ -26,6 +26,7 @@ export function GalleryGrid({
 }: GalleryGridProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   // Filter photos based on selected tags and search query
   const filteredPhotos = mockPhotos.filter(photo => {
@@ -76,19 +77,37 @@ export function GalleryGrid({
             className="group relative card-elevated overflow-hidden"
           >
             {/* Photo Container */}
-            <div className="relative aspect-[4/3] overflow-hidden">
-              {/* Placeholder colored rectangles since we don't have actual images */}
-              <div 
-                className={`w-full h-full ${
-                  index % 6 === 0 ? 'bg-gradient-to-br from-blue-400 to-blue-600' :
-                  index % 6 === 1 ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                  index % 6 === 2 ? 'bg-gradient-to-br from-purple-400 to-purple-600' :
-                  index % 6 === 3 ? 'bg-gradient-to-br from-pink-400 to-pink-600' :
-                  index % 6 === 4 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' :
-                  'bg-gradient-to-br from-red-400 to-red-600'
-                }`}
-              />
-              
+            <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+              {/*
+                Use the real image when available. If the image fails to load,
+                we keep the existing colorful gradient fallback used previously.
+              */}
+              {!failedImages.has(photo.id) ? (
+                <img
+                  src={photo.url}
+                  alt={photo.title}
+                  className="w-full h-full object-cover"
+                  onError={() =>
+                    setFailedImages(prev => {
+                      const next = new Set(prev);
+                      next.add(photo.id);
+                      return next;
+                    })
+                  }
+                />
+              ) : (
+                <div 
+                  className={`w-full h-full ${
+                    index % 6 === 0 ? 'bg-gradient-to-br from-blue-400 to-blue-600' :
+                    index % 6 === 1 ? 'bg-gradient-to-br from-green-400 to-green-600' :
+                    index % 6 === 2 ? 'bg-gradient-to-br from-purple-400 to-purple-600' :
+                    index % 6 === 3 ? 'bg-gradient-to-br from-pink-400 to-pink-600' :
+                    index % 6 === 4 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' :
+                    'bg-gradient-to-br from-red-400 to-red-600'
+                  }`}
+                />
+              )}
+
               {/* Overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300">
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -209,7 +228,7 @@ export function GalleryGrid({
         </div>
       )}
 
-      {/* Photo Detail Modal - Placeholder for future implementation */}
+      {/* Photo Detail Modal */}
       {selectedPhoto && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-slate-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
@@ -223,9 +242,48 @@ export function GalleryGrid({
                   ✕
                 </button>
               </div>
-              <p className="text-slate-600 dark:text-slate-400">
-                Photo details and larger view would be implemented here.
+
+              {/* Large image */}
+              <div className="w-full mb-4">
+                {!failedImages.has(selectedPhoto.id) ? (
+                  <img
+                    src={selectedPhoto.url}
+                    alt={selectedPhoto.title}
+                    className="w-full h-auto max-h-[60vh] object-contain rounded-md"
+                    onError={() =>
+                      setFailedImages(prev => {
+                        const next = new Set(prev);
+                        next.add(selectedPhoto.id);
+                        return next;
+                      })
+                    }
+                  />
+                ) : (
+                  <div className="w-full aspect-[4/3] bg-gradient-to-br from-slate-300 to-slate-400 rounded-md" />
+                )}
+              </div>
+
+              <p className="text-slate-600 dark:text-slate-400 mb-4">
+                {selectedPhoto.photographer && <>Photographer: <strong>{selectedPhoto.photographer}</strong><br/></>}
+                {selectedPhoto.dateTaken && <>Date taken: <strong>{selectedPhoto.dateTaken}</strong></>}
               </p>
+
+              <div className="flex items-center gap-4 mb-4">
+                <button className="btn-primary">
+                  <Download className="h-4 w-4 mr-2 inline" /> Download
+                </button>
+                <button className="btn-secondary">
+                  <Share2 className="h-4 w-4 mr-2 inline" /> Share
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {selectedPhoto.tags.map(t => (
+                  <span key={t} className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-sm rounded-full">
+                    #{t}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
