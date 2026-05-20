@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+*.db
+/.vs/copilot-intermediate-gallery-repo/FileContentIndex/9dbf1311-b376-4bb2-b720-91c00fb5185c.vsidx
+/.vs/copilot-intermediate-gallery-repo/FileContentIndex
+/.vs/slnx.sqlite
+/.vs/copilot-intermediate-gallery-repo/CopilotIndices/17.14.1091.29919
+/.vs/copilot-intermediate-gallery-repo/v17/.wsuo
+/.vs/VSWorkspaceState.json
+/.vs/copilot-intermediate-gallery-repo/v17
+/.vs/copilot-intermediate-gallery-repo/copilot-chat/80e5b061/sessions

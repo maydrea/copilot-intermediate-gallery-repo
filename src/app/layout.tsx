@@ -29,7 +29,9 @@ export default function RootLayout({
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2">
-                <Camera className="h-8 w-8 text-blue-600" />
+                <span className="logo-gradient rounded-md p-1.5 flex items-center">
+                  <Camera className="h-8 w-8 text-white" />
+                </span>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                   Portfolio Gallery
                 </h1>
